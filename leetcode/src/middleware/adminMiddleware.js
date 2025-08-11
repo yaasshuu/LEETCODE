@@ -1,41 +1,40 @@
 const jwt = require("jsonwebtoken");
-const User= require("../models/user");
-const redisClient =require("../config/redis");
+const User = require("../models/user");
+const redisClient = require("../config/redis")
 
-const adminMiddleware =async(req,res,next)=>{
+const adminMiddleware = async (req,res,next)=>{
 
     try{
-        const{token}= req.cookies;
-        
+
+        const {token} = req.cookies;
         if(!token)
-          throw new Error("Token is not present");
+            throw new Error("Token is not persent");
 
-          const payload = jwt.verify(token, process.env.JWT_KEY);
-        
-         const{_id} =payload;
+        const payload = jwt.verify(token,process.env.JWT_KEY);
 
+        const {_id} = payload;
 
-         if(!_id){
-            throw new Error("Invalid Token - ID is missing");
-         }
-
-         const result =await User.findById(_id);
-
-         if (payload.role != 'admin') {
-            throw new Error("Access Denied: Admins only");
+        if(!_id){
+            throw new Error("Invalid token");
         }
-        
-         
-         if(!result){
-            throw new Error("User doesn't exist");
-         }
 
-         //redis ke blocklist me to nhi hai 
-         const isBlocked = await redisClient.exists(`token:${token}`);
+        const result = await User.findById(_id);
 
-         if(isBlocked)
-            throw new Error("invalid token")
-         req.result = result;
+        if(payload.role!='admin')
+            throw new Error("Invalid Token");
+
+        if(!result){
+            throw new Error("User Doesn't Exist");
+        }
+
+        // Redis ke blockList mein persent toh nahi hai
+
+        const IsBlocked = await redisClient.exists(`token:${token}`);
+
+        if(IsBlocked)
+            throw new Error("Invalid Token");
+
+        req.result = result;
 
 
         next();
@@ -46,4 +45,5 @@ const adminMiddleware =async(req,res,next)=>{
 
 }
 
-module.exports= adminMiddleware;
+
+module.exports = adminMiddleware;
