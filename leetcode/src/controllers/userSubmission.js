@@ -81,14 +81,16 @@ const submitCode = async(req,res)=>{
        await submittedResult.save();
 
        //problemId ko insert krenge userSchema ke ProblemSolved me if it is not present there 
-       if (!req.result.ProblemSolved) {
-        req.result.ProblemSolved = [];
-      }
+      //  if (!req.result.ProblemSolved) {
+      //   req.result.ProblemSolved = [];
+      // }
       
-      if (!req.result.ProblemSolved.includes(problemId)) {
-        req.result.ProblemSolved.push(problemId);
+      if (!req.result.problemSolved.includes(problemId)) {
+        req.result.problemSolved.push(problemId);
         await req.result.save();
       }
+
+      
       
        res.status(201).send(submittedResult);
 
