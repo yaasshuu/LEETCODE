@@ -4,12 +4,13 @@ const Schema = mongoose.Schema;
 const submissionSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'user',
+    required: true,
+    
   },
   problemId: {
     type: Schema.Types.ObjectId,
-    ref: 'Problem',
+    ref: 'problem',
     required: true
   },
   code: {
@@ -19,7 +20,7 @@ const submissionSchema = new Schema({
   language: {
     type: String,
     required: true,
-    enum: ['javascript', 'cpp', 'java'] 
+    enum: ['javascript', 'c++', 'java'] 
   },
   status: {
     type: String,
@@ -49,6 +50,11 @@ const submissionSchema = new Schema({
 }, { 
   timestamps: true
 });
+ 
+submissionSchema.index({userId:1 , problemId:1});
+
+
+
 
 const Submission =mongoose.model('submission',submissionSchema);
 
