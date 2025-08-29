@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import axiosClient from "../utils/axiosClient"
 import SubmissionHistory from "../components/SubmissionHistory"
 import ChatAi from '../components/ChatAi';
+import Editorial from '../components/Editorial';
 
 const langMap = {
         cpp: 'C++',
@@ -25,10 +26,11 @@ const ProblemPage = () => {
   const editorRef = useRef(null);
   let {problemId}  = useParams();
 
+  
+
   const { handleSubmit } = useForm();
 
-  // Fetch problem data
-  useEffect(() => {
+ useEffect(() => {
     const fetchProblem = async () => {
       setLoading(true);
       try {
@@ -182,6 +184,8 @@ const ProblemPage = () => {
           >
             ChatAI
           </button>
+
+
         </div>
 
         {/* Left Content */}
@@ -226,7 +230,7 @@ const ProblemPage = () => {
                 <div className="prose max-w-none">
                   <h2 className="text-xl font-bold mb-4">Editorial</h2>
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {'Editorial is here for the problem'}
+                    <Editorial secureUrl={problem.secureUrl} thumbnailUrl={problem.thumbnailUrl} duration={problem.duration}/>
                   </div>
                 </div>
               )}
@@ -264,7 +268,7 @@ const ProblemPage = () => {
                 <div className="prose max-w-none">
                   <h2 className="text-xl font-bold mb-4">CHAT with AI</h2>
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                    <ChatAi></ChatAi>
+                    <ChatAi problem={problem}></ChatAi>
                   </div>
                 </div>
               )}

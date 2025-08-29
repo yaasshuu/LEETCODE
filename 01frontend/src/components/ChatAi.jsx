@@ -5,8 +5,8 @@ import { Send } from 'lucide-react';
 
 function ChatAi({problem}) {
     const [messages, setMessages] = useState([
-        { role: 'model', content: "Hi, How are you" },
-        { role: 'user', content: "I am Good" }
+        { role: 'model', parts:[{text: "Hi, How are you"}]},
+        { role: 'user', parts:[{text: "I am Good"}]}
     ]);
 
     const { register, handleSubmit, reset,formState: {errors} } = useForm();
@@ -18,25 +18,29 @@ function ChatAi({problem}) {
 
     const onSubmit = async (data) => {
         
-        setMessages(prev => [...prev, { role: 'user', content: data.message }]);
+        setMessages(prev => [...prev, { role: 'user', parts:[{text: data.message}] }]);
         reset();
 
         try {
             
-            const response = await axiosClient.post("/chat/ai", {
-                message: data.message
+            const response = await axiosClient.post("/ai/chat", {
+                messages:messages,
+                title:problem.title,
+                description:problem.description,
+                testCases: problem.visibleTestCases,
+                startCode:problem.startCode
             });
 
            
             setMessages(prev => [...prev, { 
                 role: 'model', 
-                content: response.data.message || response.data.content 
+                parts:[{text: response.data.message}] 
             }]);
         } catch (error) {
             console.error("API Error:", error);
             setMessages(prev => [...prev, { 
                 role: 'model', 
-                content: "Sorry, I encountered an error" 
+                parts:[{text: "Error from AI Chatbot"}]
             }]);
         }
     };
@@ -50,13 +54,12 @@ function ChatAi({problem}) {
                         className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}
                     >
                         <div className="chat-bubble bg-base-200 text-base-content">
-                            {msg.content}
+                            {msg.parts[0].text}
                         </div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />
             </div>
-
             <form 
                 onSubmit={handleSubmit(onSubmit)} 
                 className="sticky bottom-0 p-4 bg-base-100 border-t"
